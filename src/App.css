@@ -1,0 +1,147 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+body {
+  overflow: hidden;
+  height: 100%;
+}
+
+.sample-card {
+  width: 2.5in;
+  height: 3.5in;
+  transform: translateZ(1px);
+}
+.card-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+.card-front {
+  background-color: lightsteelblue;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  transform: translateZ(1px);
+}
+.card-back {
+  background-color: brown;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  transform: translateZ(-1px);
+}
+.card-front >img, .card-back > img {
+  height: 100%;
+  width: 100%;
+}
+.card-border {
+  background-color: #959393;
+}
+.card-left-side {
+  position: absolute;
+  height: 100%;
+  width: 2px;
+  left: 0;
+  transform: translateZ(1px) rotateY(90deg);
+  transform-origin: left;
+}
+.card-right-side {
+  position: absolute;
+  height: 100%;
+  width: 2px;
+  right: 0;
+  transform: translateZ(-1px) rotateY(90deg);
+  transform-origin: right;
+}
+.card-top-side {
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  top: 0;
+  transform: translateZ(-1px) rotateX(90deg);
+  transform-origin: top;
+}
+.card-bottom-side {
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  bottom: 0;
+  transform: translateZ(1px) rotateX(90deg);
+  transform-origin: bottom;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+
+  position: relative;
+
+  height: 100vh;
+}
+
+.front {
+  background-color: orange;
+  opacity: 0.5;
+  width: 20cm;
+  height: 20cm;
+}
+
+.bottom {
+  position: absolute;
+  background-color: #282c34;
+  width: 60cm;
+  height: 50cm;
+}
+.bottom > * {
+  position: absolute;
+}
+
+.pov-hand {
+  background-color: green;
+  opacity: 0.75;
+  width: 200px;
+  height: 50px;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+
+.cube div {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  text-align: center;
+}
+
+
+.App-link {
+  color: #61dafb;
+  bottom: 0;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

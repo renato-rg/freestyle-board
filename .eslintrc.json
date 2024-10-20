@@ -1,0 +1,135 @@
+{
+  "root": false,
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "sourceType": "module",
+    "ecmaVersion": 13
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "simple-import-sort", "import"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      /**
+      * Enforce that boolean variables are prefixed with an allowed verb
+      */
+      {
+        "selector": "variable",
+        "types": ["boolean"],
+        "format": ["PascalCase"],
+        "prefix": ["is", "should", "has", "can", "did", "will", "exists", "was"]
+      },
+      /**
+      * Enforce that type parameters (generics) are prefixed with T
+      */
+      {
+        "selector": "typeParameter",
+        "format": ["PascalCase"],
+        "prefix": ["T"]
+      },
+      /**
+      * Enforce that interface names do not begin with an I
+      */
+      {
+        "selector": "interface",
+        "format": ["PascalCase"],
+        "custom": {
+          "regex": "^I[A-Z]",
+          "match": false
+        }
+      },
+      /**
+      * Enforce that type names do not begin with an T
+      */
+      {
+        "selector": "typeAlias",
+        "format": ["PascalCase"],
+        "custom": {
+          "regex": "^T[A-Z]",
+          "match": false
+        }
+      }
+    ],
+    /**
+    * TODO @Mascia
+    * This breaks LOTS of files: Change from "off" to "error" and fix every new error when possible
+    */
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-empty-interface": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/unbound-method": "warn",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "no-case-declarations": "off",
+    "no-nested-ternary": "error",
+    "no-unneeded-ternary": "error",
+    "no-return-await": "error",
+    "no-multi-spaces": ["error"],
+    "no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
+    "no-trailing-spaces": "error",
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxEOF": 0
+      }
+    ],
+    "prefer-const": "error",
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ],
+    "semi": [
+      "error",
+      "always",
+      {
+        "omitLastInOneLineBlock": true,
+        "omitLastInOneLineClassBody": true
+      }
+    ],
+    "padding-line-between-statements": "error",
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
+    "comma-style": ["error", "last"],
+    "comma-dangle": ["error", "always-multiline"],
+    "eol-last": ["error", "always"],
+    /**
+    * TODO @Mascia
+    * This breaks LOTS of files: Change from "off" to "error" and fix every new error when possible
+    */
+    "max-len": [
+      "off",
+      {
+        "code": 100,
+        "comments": 100,
+        "tabWidth": 2,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true
+      }
+    ]
+  }
+}
