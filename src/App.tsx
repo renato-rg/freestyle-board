@@ -1,9 +1,16 @@
 import './App.css';
 
-import React, { MouseEventHandler, useEffect, useRef, useState, WheelEventHandler } from 'react';
+import React, { MouseEventHandler, useEffect, useState, WheelEventHandler } from 'react';
 
 import { Card } from './Card';
-import { CardPlace, CardProps, CardTablePosition } from './Card.types';
+import {
+  CardInHand,
+  CardLocation,
+  CardOnField,
+  CardOnFieldPosition,
+  DraggedCard,
+} from './Card.types';
+import { HandWithCards } from './Hand';
 
 //  const [canCameraMove, setCanCameraMove] = useState(false);
 //  const [isTriggerKeyHeld, setIsTriggerKeyHeld] = useState(false);
@@ -31,21 +38,26 @@ function App() {
   const [rotateYDegrees, setRotateYDegrees] = useState(-8);
 
   const MAX_SCALE = 3.9;
-  const MIN_SCALE = 0.1;
+  const MIN_SCALE = 0.3;
 
   const MAX_ROTATE_X = -7; // Lowest vertical POV
-  const MIN_ROTATE_X = -80; // Highest vertical POV
+  const MIN_ROTATE_X = -90; // Highest vertical POV
 
-  const MAX_ROTATE_Y = 50; // Max left horizontal POV
-  const MIN_ROTATE_Y = -50; // Max right horizontal POV
+  const MAX_ROTATE_Y = 0; // Max left horizontal POV
+  const MIN_ROTATE_Y = 0; // Max right horizontal POV
 
-  // Move somewhere else, separated from camera logic
-  const [fieldCards, setFieldCards] = useState<CardProps[]>([]);
+  const [deck, setDeck] = useState([]);
+  const [oponentDeck, setOponentDeck] = useState([]);
+
+  const [handCards, setHandCards] = useState<Record<string, CardInHand>>({});
+  const [oponentHandCards, setOponentHandCards] = useState<CardInHand[]>([]);
+
+  const [fieldCards, setFieldCards] = useState<Record<string, CardOnField>>({});
 
   const resetCamera = () => {
     setScale(0.4);
     setMouseMovePosition(null);
-    setRotateXDegrees(-60);
+    setRotateXDegrees(-70);
     setRotateYDegrees(-0);
   };
 
@@ -98,6 +110,20 @@ function App() {
 
   useEffect(() => {
     resetCamera();
+
+    const id1 = Date.now().toString();
+    const id2 = (Date.now() + 1).toString();
+    const id3 = (Date.now() + 2).toString();
+    setHandCards({
+      [id1]: { location: CardLocation.HAND, id: id1, cardRef: 'test1', index: 0 },
+      [id2]: {
+        location: CardLocation.HAND,
+        id: id2,
+        cardRef: 'test2',
+        index: 1,
+      },
+      [id3]: { location: CardLocation.HAND, id: id3, cardRef: 'test3', index: 2 },
+    });
   }, []);
 
   return (
@@ -107,12 +133,7 @@ function App() {
       onMouseMove={onMouseMove}
       onWheel={onWheel as unknown as WheelEventHandler<HTMLDivElement>}
     >
-      <div className={'pov-hand'}>
-        My handddd
-        <Card {...{ id: 'test1', place: CardPlace.HAND }} />
-        <Card {...{ id: 'test2', front: '', back: '', place: CardPlace.HAND }} />
-        <Card {...{ id: 'test3', front: '', back: '', place: CardPlace.HAND }} />
-      </div>
+      <HandWithCards cards={handCards} />
 
       <div style={{ transition: 'all 0.3s', transform: `scale(${scale})` }}>
         <div
@@ -133,10 +154,8 @@ function App() {
           <div
             className="bottom"
             onDrop={(ev) => {
-              console.log('onDrop', ev);
               ev.preventDefault();
-              // Get the id of the target and add the moved element to the target's DOM
-              const cardId = ev.dataTransfer.getData('text/plain');
+              const draggedCard: DraggedCard = JSON.parse(ev.dataTransfer.getData('text/plain'));
 
               const { clientX, clientY } = ev;
               const { left, width, top, height } = (
@@ -145,21 +164,34 @@ function App() {
               const horizontal = (((clientX - left) / width) * 100).toFixed(2);
               const vertical = (((clientY - top) / height) * 100).toFixed(2);
 
-              setFieldCards((prevState) => [
-                ...prevState,
-                {
-                  id: cardId,
-                  place: CardPlace.TABLE,
-                  position: CardTablePosition.DOWN_ATK,
-                  left: `${horizontal}%`,
-                  top: `${vertical}%`,
-                },
-              ]);
+              if (draggedCard.location === CardLocation.FIELD) {
+                setFieldCards((prevState) => ({
+                  ...prevState,
+                  [draggedCard.id]: {
+                    ...prevState[draggedCard.id],
+                    left: `${horizontal}%`,
+                    top: `${vertical}%`,
+                  },
+                }));
+              } else if (draggedCard.location === CardLocation.HAND) {
+                const cardInHand = handCards[draggedCard.id];
+                setFieldCards((prevState) => ({
+                  ...prevState,
+                  [draggedCard.id]: {
+                    id: draggedCard.id,
+                    location: CardLocation.FIELD,
+                    cardRef: cardInHand.cardRef,
+                    position: CardOnFieldPosition.DOWN_DEF,
+                    left: `${horizontal}%`,
+                    top: `${vertical}%`,
+                  },
+                }));
+              }
             }}
             onDragOver={(ev) => {
               console.log('onDragOver', ev);
               ev.preventDefault();
-              ev.dataTransfer.dropEffect = 'move';
+              ev.dataTransfer.dropEffect = 'link';
             }}
             style={{
               transform: 'rotateX(90deg) translateY(0%)',
@@ -171,9 +203,10 @@ function App() {
               Reset Camera
             </div>
 
-            {fieldCards.map((cardProps) => (
-              <Card {...cardProps} />
-            ))}
+            {Object.keys(fieldCards).map((cardId) => {
+              const fieldCard = fieldCards[cardId];
+              return <Card {...fieldCard} />;
+            })}
           </div>
         </div>
       </div>
