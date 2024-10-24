@@ -36,7 +36,7 @@ function App() {
     initialClientX: number;
     initialClientY: number;
   } | null>(null);
-  const [rotateXDegrees, setRotateXDegrees] = useState(-52);
+  const [rotateXDegrees, setRotateXDegrees] = useState(-60);
   const [rotateYDegrees, setRotateYDegrees] = useState(0);
 
   const MAX_SCALE = 3.9;
@@ -59,7 +59,7 @@ function App() {
   const resetCamera = () => {
     setScale(0.45);
     setMouseMovePosition(null);
-    setRotateXDegrees(-52);
+    setRotateXDegrees(-60);
     setRotateYDegrees(-0);
   };
 
