@@ -2,14 +2,16 @@ import './App.css';
 
 import React, { MouseEventHandler, useEffect, useState, WheelEventHandler } from 'react';
 
-import { Card } from './Card';
 import {
-  CardInHand,
+  CardInHandProps,
   CardLocation,
-  CardOnField,
   CardOnFieldPosition,
-  DraggedCard,
+  CardOnFieldProps,
+  DraggedElement,
+  DragggedElementType,
 } from './Card.types';
+import { CardOnField } from './CardOnField';
+import { Deck } from './Deck';
 import { HandWithCards } from './Hand';
 
 //  const [canCameraMove, setCanCameraMove] = useState(false);
@@ -27,15 +29,15 @@ import { HandWithCards } from './Hand';
 //  }, [isTriggerKeyHeld])
 
 function App() {
-  const [scale, setScale] = useState(0.4);
+  const [scale, setScale] = useState(0.45);
 
   // Vertical position. Lower the number, higher on screen
   const [mouseMovePosition, setMouseMovePosition] = useState<{
     initialClientX: number;
     initialClientY: number;
   } | null>(null);
-  const [rotateXDegrees, setRotateXDegrees] = useState(-13);
-  const [rotateYDegrees, setRotateYDegrees] = useState(-8);
+  const [rotateXDegrees, setRotateXDegrees] = useState(-52);
+  const [rotateYDegrees, setRotateYDegrees] = useState(0);
 
   const MAX_SCALE = 3.9;
   const MIN_SCALE = 0.3;
@@ -46,18 +48,18 @@ function App() {
   const MAX_ROTATE_Y = 0; // Max left horizontal POV
   const MIN_ROTATE_Y = 0; // Max right horizontal POV
 
-  const [deck, setDeck] = useState([]);
+  const [deck, setDeck] = useState({ left: '82%', top: '50%', length: 25 });
   const [oponentDeck, setOponentDeck] = useState([]);
 
-  const [handCards, setHandCards] = useState<Record<string, CardInHand>>({});
-  const [oponentHandCards, setOponentHandCards] = useState<CardInHand[]>([]);
+  const [handCards, setHandCards] = useState<Record<string, CardInHandProps>>({});
+  const [oponentHandCards, setOponentHandCards] = useState<CardInHandProps[]>([]);
 
-  const [fieldCards, setFieldCards] = useState<Record<string, CardOnField>>({});
+  const [fieldCards, setFieldCards] = useState<Record<string, CardOnFieldProps>>({});
 
   const resetCamera = () => {
-    setScale(0.4);
+    setScale(0.45);
     setMouseMovePosition(null);
-    setRotateXDegrees(-70);
+    setRotateXDegrees(-52);
     setRotateYDegrees(-0);
   };
 
@@ -155,7 +157,9 @@ function App() {
             className="bottom"
             onDrop={(ev) => {
               ev.preventDefault();
-              const draggedCard: DraggedCard = JSON.parse(ev.dataTransfer.getData('text/plain'));
+              const draggedElement: DraggedElement = JSON.parse(
+                ev.dataTransfer.getData('text/plain'),
+              );
 
               const { clientX, clientY } = ev;
               const { left, width, top, height } = (
@@ -163,22 +167,29 @@ function App() {
               ).getBoundingClientRect();
               const horizontal = (((clientX - left) / width) * 100).toFixed(2);
               const vertical = (((clientY - top) / height) * 100).toFixed(2);
+              const leftP = `${horizontal}%`;
+              const topP = `${vertical}%`;
 
-              if (draggedCard.location === CardLocation.FIELD) {
+              if (draggedElement.type === DragggedElementType.DECK) {
+                setDeck((prevState) => ({ ...prevState, left: leftP, top: topP }));
+                return;
+              }
+
+              if (draggedElement.location === CardLocation.FIELD) {
                 setFieldCards((prevState) => ({
                   ...prevState,
-                  [draggedCard.id]: {
-                    ...prevState[draggedCard.id],
+                  [draggedElement.id]: {
+                    ...prevState[draggedElement.id],
                     left: `${horizontal}%`,
                     top: `${vertical}%`,
                   },
                 }));
-              } else if (draggedCard.location === CardLocation.HAND) {
-                const cardInHand = handCards[draggedCard.id];
+              } else if (draggedElement.location === CardLocation.HAND) {
+                const cardInHand = handCards[draggedElement.id];
                 setFieldCards((prevState) => ({
                   ...prevState,
-                  [draggedCard.id]: {
-                    id: draggedCard.id,
+                  [draggedElement.id]: {
+                    id: draggedElement.id,
                     location: CardLocation.FIELD,
                     cardRef: cardInHand.cardRef,
                     position: CardOnFieldPosition.DOWN_DEF,
@@ -199,13 +210,14 @@ function App() {
               transformStyle: 'preserve-3d' as const,
             }}
           >
+            <Deck {...deck} />
             <div className="App-link" onClick={resetCamera}>
               Reset Camera
             </div>
 
             {Object.keys(fieldCards).map((cardId) => {
               const fieldCard = fieldCards[cardId];
-              return <Card {...fieldCard} />;
+              return <CardOnField {...fieldCard} />;
             })}
           </div>
         </div>

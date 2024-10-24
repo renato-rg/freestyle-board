@@ -2,10 +2,10 @@ import './App.css';
 
 import React from 'react';
 
-import { CardInHand, CardLocation, DraggedCard } from './Card.types';
+import { CardInHandProps, CardLocation, DraggedElement, DragggedElementType } from './Card.types';
 import { cardInventory } from './CardInventory';
 
-export function HandWithCards(props: { cards: Record<string, CardInHand> }) {
+export function HandWithCards(props: { cards: Record<string, CardInHandProps> }) {
   return (
     <div className={'pov-hand'}>
       My handddd
@@ -20,7 +20,11 @@ export function HandWithCards(props: { cards: Record<string, CardInHand> }) {
             }}
             draggable="true"
             onDragStart={(ev) => {
-              const draggedCard: DraggedCard = { location: CardLocation.HAND, id: card.id };
+              const draggedCard: DraggedElement = {
+                type: DragggedElementType.CARD,
+                location: CardLocation.HAND,
+                id: card.id,
+              };
               ev.dataTransfer.setData('text/plain', JSON.stringify(draggedCard));
               ev.dataTransfer.dropEffect = 'move';
             }}

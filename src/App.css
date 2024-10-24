@@ -24,7 +24,7 @@ body {
   transform: translateZ(1px);
 }
 .card-container {
-  position: relative;
+  position: absolute;
   height: 100%;
   width: 100%;
 }

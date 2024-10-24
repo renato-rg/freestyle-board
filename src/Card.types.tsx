@@ -11,21 +11,14 @@ export enum CardOnFieldPosition {
   DOWN_DEF = 'DOWN_DEF',
 }
 
-export interface CardInHand {
+export interface CardInHandProps {
   location: CardLocation.HAND;
   id: string;
   cardRef: string;
   index: number;
 }
 
-export interface CardInHand {
-  location: CardLocation.HAND;
-  id: string;
-  cardRef: string;
-  index: number;
-}
-
-export interface CardOnField {
+export interface CardOnFieldProps {
   location: CardLocation.FIELD;
   id: string;
   cardRef: string;
@@ -34,16 +27,27 @@ export interface CardOnField {
   top: string;
 }
 
-export interface CardInDeck {
+export interface CardInDeckProps {
   location: CardLocation.DECK;
   id: string;
   cardRef: string;
   index: number;
 }
 
-export type CardProps = CardInHand | CardOnField | CardInDeck;
+export type CardProps = CardInHandProps | CardOnFieldProps | CardInDeckProps;
 
-export interface DraggedCard {
-  location: CardLocation;
-  id: string;
+export enum DragggedElementType {
+  CARD = 'CARD',
+  DECK = 'DECK',
 }
+
+export type DraggedElement =
+  | {
+      type: DragggedElementType.CARD;
+      location: CardLocation;
+      id: string;
+    }
+  | {
+      type: DragggedElementType.DECK;
+      id: string;
+    };
